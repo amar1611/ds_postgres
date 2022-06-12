@@ -1,0 +1,38 @@
+version: '3.5'
+services:
+  db:
+    image: postgres
+    container_name: postgres_container
+    restart: always
+    volumes:
+      - '${POSTGRES__EXTERNAL__DATA_PATH}:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+    ports:
+      - '${POSTGRES__EXTERNAL__PORT}:5432'
+    networks:
+      ds_network:
+        ipv4_address: 172.25.0.2
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_EMAIL}'
+      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_PASSWORD}'
+    ports:
+      - '${PGADMIN__EXTERNAL__PORT}:80'
+    networks:
+      ds_network:
+        ipv4_address: 172.25.0.3
+networks:
+  ds_network:
+    name: data_store_static
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
